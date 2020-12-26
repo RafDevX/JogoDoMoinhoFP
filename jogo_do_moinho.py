@@ -204,3 +204,30 @@ def obter_posicoes_jogador(t, j):
 		if pecas_iguais(obter_peca(t, p), j):
 			posicoes += (p,)
 	return posicoes
+
+
+##### Funcoes Adicionais #####
+
+def obter_fase(t, j): # aux
+	return 'movimento' if len(obter_posicoes_jogador(t,j)) == 3 else 'colocacao'
+
+def obter_movimento_manual(t, j):
+	fase = obter_fase(t, j)
+	if fase == 'colocacao':
+		p_str = input('Turno do jogador. Escolha uma posicao: ')
+		if len(p_str) == 2:
+			if p_str[0] in ('a', 'b', 'c') and p_str[1] in ('1', '2', '3'):
+				p = cria_posicao(p_str[0], p_str[1])
+				if eh_posicao_livre(t, p):
+					return (p,)
+	elif fase == 'movimento':
+		p_str = input('Turno do jogador. Escolha um movimento: ')
+		if len(p_str) == 4:
+			if p_str[0] in ('a', 'b', 'c') and p_str[1] in ('1', '2', '3') \
+				and p_str[2] in ('a', 'b', 'c') and p_str[3] in ('1', '2', '3'):
+				p1 = cria_posicao(p_str[0], p_str[1])
+				p2 = cria_posicao(p_str[2], p_str[3])
+				if pecas_iguais(obter_peca(t,p1), j) and eh_posicao_livre(t,p2):
+					return (p1, p2)
+	raise ValueError('obter_movimento_manual: escolha invalida')
+
