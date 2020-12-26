@@ -23,7 +23,7 @@ def obter_pos_l(p):
 	return p[1]
 
 def eh_posicao(arg):
-	return (type(arg) == list and len(arg) == 2
+	return (isinstance(arg, list) and len(arg) == 2
 		and arg[0] in ('a', 'b', 'c') and arg[1] in ('1', '2', '3'))
 
 def posicoes_iguais(p1, p2):
@@ -67,7 +67,7 @@ def cria_copia_peca(j):
 	raise ValueError('cria_copia_peca: argumento invalido')
 
 def eh_peca(arg):
-	return type(arg) == list and len(arg) == 1 and arg[0] in ('X', 'O', ' ')
+	return isinstance(arg, list) and len(arg) == 1 and arg[0] in ('X', 'O', ' ')
 
 def pecas_iguais(j1, j2):
 	return eh_peca(j1) and j1 == j2
@@ -93,7 +93,7 @@ def peca_para_inteiro(j):
 def cria_tabuleiro():
 	t = {}
 	for s in ('a1', 'b1', 'c1', 'a2', 'b2', 'c2', 'a3', 'b3', 'c3'):
-		t[cria_posicao(s[0], s[1])] = cria_peca(' ')
+		t[s] = cria_peca(' ')
 	return t
 
 def cria_copia_tabuleiro(t):
@@ -103,34 +103,39 @@ def cria_copia_tabuleiro(t):
 	raise ValueError('cria_copia_tabuleiro: argumento invalido')
 
 def obter_peca(t, p):
-	return t[p]
+	return t[posicao_para_str(p)]
 
 def obter_vetor(t, s):
 	v = ()
-	for p in t.keys():
-		if s in posicao_para_str(p):
-			v += (t[p],)
+	for ps in t.keys():
+		if s in ps:
+			v += (t[ps],)
 	return v
 
 def coloca_peca(t, j, p):
-	t[p] = j
+	t[posicao_para_str(p)] = j
 	return t
 
 def remove_peca(t, p):
-	t[p] = cria_peca(' ')
+	t[posicao_para_str(p)] = cria_peca(' ')
 	return t
 
 def move_peca(t, p1, p2):
-	return remove_peca(coloca_peca(t, p2, obter_peca(t, p1)), p1)
+	return remove_peca(coloca_peca(t, obter_peca(t, p1), p2), p1)
 
 def eh_tabuleiro(arg):
-	if not (type(arg) == dict and len(arg) == 9):
+	if not (isinstance(arg, dict) and len(arg) == 9):
 		return False
 	
 	peca_o, peca_x = cria_peca('X'), cria_peca('O')
 	total_o, total_x = 0, 0
 
+	chaves_usadas = {}
 	for p in arg.keys():
+		if (p not in ('a1', 'b1', 'c1', 'a2', 'b2', 'c2', 'a3', 'b3', 'c3')
+			or p in chaves_usadas.keys()):
+			return False
+		chaves_usadas[p] = True
 		if pecas_iguais(arg[p], peca_x):
 			total_x += 1
 		elif pecas_iguais(arg[p], peca_o):
@@ -157,6 +162,7 @@ def linha_tabuleiro_para_str(t, l): # l e um str numerico!
 		else:
 			s += '-'
 		s += peca_para_str(peca)
+	return s
 
 def tabuleiro_para_str(t):
 	s = '   a   b   c\n'
@@ -164,11 +170,37 @@ def tabuleiro_para_str(t):
 	s += '   | \\ | / |\n'
 	s += linha_tabuleiro_para_str(t, '2') + '\n'
 	s += '   | / | \\ |\n'
-	s += linha_tabuleiro_para_str(t, '3') + '\n'
+	s += linha_tabuleiro_para_str(t, '3')
 	return s
 
 def tuplo_para_tabuleiro(t):
 	tab = {}
 	for s in ('a1', 'b1', 'c1', 'a2', 'b2', 'c2', 'a3', 'b3', 'c3'):
-		tab[cria_posicao(s[0], s[1])] = t[int(s[1]) - 1][ord(s[0]) - ord('a')]
+		inteiro = t[int(s[1]) - 1][ord(s[0]) - ord('a')]
+		jog = ' '
+		if inteiro == 1:
+			jog = 'X'
+		elif inteiro == -1:
+			jog = 'O'
+		tab[s] = cria_peca(jog)
 	return tab
+
+# Alto Nivel
+
+def obter_ganhador(t):
+	for i in ('a', 'b', 'c', '1', '2', '3'):
+		v = obter_vetor(t, i)
+		if v[0] == v[1] == v[2]:
+			return v[0]
+	return cria_peca(' ')
+
+def obter_posicoes_livres(t):
+	return obter_posicoes_jogador(t, cria_peca(' '))
+
+def obter_posicoes_jogador(t, j):
+	posicoes = ()
+	for s in ('a1', 'b1', 'c1', 'a2', 'b2', 'c2', 'a3', 'b3', 'c3'):
+		p = cria_posicao(s[0], s[1])
+		if pecas_iguais(obter_peca(t, p), j):
+			posicoes += (p,)
+	return posicoes
