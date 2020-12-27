@@ -41,12 +41,12 @@ def obter_posicoes_adjacentes(p):
 		'b1': ('a1', 'c1', 'b2'),
 		'c1': ('b1', 'b2', 'c2'),
 		'a2': ('a1', 'b2', 'a3'),
+		'b2': ('a1', 'b1', 'c1', 'a2', 'c2', 'a3', 'b3', 'c3'),
 		'c2': ('c1', 'b2', 'c3'),
 		'a3': ('a2', 'b2', 'b3'),
 		'b3': ('b2', 'a3', 'c3'),
 		'c3': ('b2', 'c2', 'b3'),
 	}
-	adj['b2'] = tuple(adj.keys())
 	return tuple(cria_posicao(x[0], x[1]) for x in adj[posicao_para_str(p)])
 
 
@@ -145,6 +145,12 @@ def eh_tabuleiro(arg):
 	if max(total_o, total_x) > 3 or abs(total_x - total_o) > 1:
 		return False
 
+	ganhador = obter_ganhador(arg)
+	if (not pecas_iguais(ganhador, peca_livre)
+		and not pecas_iguais(obter_ganhador(remove_peca(arg.copy(), \
+			obter_posicoes_jogador(arg, ganhador)[0])), peca_livre)):
+			return False # dois ganhadores
+
 	return True
 
 def eh_posicao_livre(t, p):
@@ -188,11 +194,13 @@ def tuplo_para_tabuleiro(t):
 # Alto Nivel
 
 def obter_ganhador(t):
+	peca_livre = cria_peca(' ')
 	for i in ('a', 'b', 'c', '1', '2', '3'):
 		v = obter_vetor(t, i)
-		if v[0] == v[1] == v[2]:
+		if (not pecas_iguais(v[0], peca_livre) and pecas_iguais(v[0], v[1])
+			and pecas_iguais(v[0], v[2])):
 			return v[0]
-	return cria_peca(' ')
+	return peca_livre
 
 def obter_posicoes_livres(t):
 	return obter_posicoes_jogador(t, cria_peca(' '))
