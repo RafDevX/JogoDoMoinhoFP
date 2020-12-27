@@ -308,14 +308,14 @@ def minimax(t, j, profundidade, seq_movimentos = ()):
 
 def obter_movimento_auto(t, j, dificuldade):
 	fase = obter_fase(t, j)
+	mov_redundante = 2*((obter_posicoes_jogador(t, j))[0],)
 	if fase == 'colocacao':
 		return (escolher_posicao_colocacao_auto(t, j),)
 	elif dificuldade == 'facil':
-		return escolher_movimento_facil_auto(t, j)
+		return escolher_movimento_facil_auto(t, j) or mov_redundante
 	else:
 		(_, seq_movs) = minimax(t, j, 1 if dificuldade == 'normal' else 5)
-		return seq_movs[0] if len(seq_movs) \
-			else 2*((obter_posicoes_jogador(t, j))[0],)
+		return seq_movs[0] if seq_movs else mov_redundante
 
 def faz_jogada(t, j, movimento):
 	if len(movimento) == 2:
