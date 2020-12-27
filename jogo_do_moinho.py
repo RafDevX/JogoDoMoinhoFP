@@ -127,7 +127,7 @@ def eh_tabuleiro(arg):
 	if not (isinstance(arg, dict) and len(arg) == 9):
 		return False
 	
-	peca_o, peca_x = cria_peca('X'), cria_peca('O')
+	peca_o, peca_x, peca_livre = cria_peca('X'), cria_peca('O'), cria_peca(' ')
 	total_o, total_x = 0, 0
 
 	chaves_usadas = {}
@@ -140,7 +140,7 @@ def eh_tabuleiro(arg):
 			total_x += 1
 		elif pecas_iguais(arg[p], peca_o):
 			total_o += 1
-		else:
+		elif not pecas_iguais(arg[p], peca_livre):
 			return False
 		if max(total_o, total_x) > 3 or abs(total_x - total_o) > 1:
 			return False
@@ -231,3 +231,66 @@ def obter_movimento_manual(t, j):
 					return (p1, p2)
 	raise ValueError('obter_movimento_manual: escolha invalida')
 
+# <Criterios de Colocacao Automatica>
+
+def criterio_colocacao_vitoria(t, j):
+	for s in ('a1', 'b1', 'c1', 'a2', 'b2', 'c2', 'a3', 'b3', 'c3'):
+		p = cria_posicao(s[0], s[1])
+		t_tmp = cria_copia_tabuleiro(t)
+		if pecas_iguais(obter_ganhador(coloca_peca(t_tmp, j, p)), j):
+			return p
+	return None
+
+def criterio_colocacao_bloqueio(t, j):
+	outro = cria_peca('X') if 'O' in peca_para_str(j) else cria_peca('O')
+	return criterio_colocacao_vitoria(t, outro)
+
+def criterio_colocacao_centro(t, j):
+	p = cria_posicao('b', '2')
+	return eh_posicao_livre(t, p) and p
+
+def criterio_colocacao_canto_vazio(t, j):
+	for s in ('a1', 'c1', 'a3', 'c3'):
+		p = cria_posicao(s[0], s[1])
+		if eh_posicao_livre(t, p):
+			return p
+	return None
+
+def criterio_colocacao_lateral_vazio(t, j):
+	for s in ('b1', 'a2', 'c2', 'b3'):
+		p = cria_posicao(s[0], s[1])
+		if eh_posicao_livre(t, p):
+			return p
+	return None
+
+# </Criterios de Colocacao Automatica>
+
+def escolher_posicao_colocacao_auto(t, j):
+	criterios = (
+		criterio_colocacao_vitoria, criterio_colocacao_bloqueio,
+		criterio_colocacao_centro, criterio_colocacao_canto_vazio,
+		criterio_colocacao_lateral_vazio,
+	)
+	for crit in criterios:
+		p = crit(t, j)
+		if p is not None:
+			return p
+
+	raise RuntimeError('escolher_posicao_colocacao_auto: ' \
+		+ 'nenhum criterio de colocacao e aplicavel') 
+
+def escolher_movimento_facil_auto(t, j):
+	for p in obter_posicoes_jogador(t, j):
+		adj = obter_posicoes_adjacentes(p)
+		if len(adj):
+			return (p, adj[0])
+	return None
+
+def obter_movimento_auto(t, j, dificuldade):
+	fase = obter_fase(t, j)
+	if fase == 'colocacao':
+		return (escolher_posicao_colocacao_auto(t, j),)
+	elif dificuldade == 'facil':
+		return escolher_movimento_facil_auto(t, j)
+	else:
+		return 'fixme' #minimax(depth = 1 if dificuldade == 'normal' else 5)
