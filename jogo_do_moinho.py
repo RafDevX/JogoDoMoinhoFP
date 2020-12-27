@@ -286,6 +286,9 @@ def escolher_movimento_facil_auto(t, j):
 			return (p, adj[0])
 	return None
 
+def minimax(t, j, profundidade, seq_movimentos = ()):
+	return 'todo' # not sure if seq_movimentos should be tuple
+
 def obter_movimento_auto(t, j, dificuldade):
 	fase = obter_fase(t, j)
 	if fase == 'colocacao':
@@ -293,4 +296,4 @@ def obter_movimento_auto(t, j, dificuldade):
 	elif dificuldade == 'facil':
 		return escolher_movimento_facil_auto(t, j)
 	else:
-		return 'fixme' #minimax(depth = 1 if dificuldade == 'normal' else 5)
+		return minimax(t, j, 1 if dificuldade == 'normal' else 5)
