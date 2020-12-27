@@ -22,7 +22,7 @@ def cria_copia_posicao(p):
 	"""Constroi uma posicao identica a outra.
 
 	Recebe como argumento uma posicao e devolve outra posicao que e
-	a copia da dada.
+	uma copia da dada.
 	"""
 	if eh_posicao(p):
 		return p.copy()
@@ -62,8 +62,7 @@ def posicoes_iguais(p1, p2):
 	Recebe duas posicoes como argumentos e devolve True se sao identicas,
 	ou False caso contrario.
 	"""
-	return (eh_posicao(p1) and eh_posicao(p2)
-	and p1[0] == p2[0] and p1[1] == p2[1])
+	return eh_posicao(p1) and p1 == p2
 
 def posicao_para_str(p):
 	# posicao -> str
@@ -102,29 +101,66 @@ def obter_posicoes_adjacentes(p):
 ## Baixo Nivel
 
 def cria_peca(s):
+	# str -> peca
+	"""Constroi uma peca.
+
+	Recebe como argumento uma cadeia de caracteres correspondente a um dos
+	dois jogadores ('X' ou 'O') ou a uma peca livre (' ') e devolve uma
+	nova peca que lhe corresponde.
+	Gera um ValueError se o argumento for invalido.
+	"""
 	if s in ('X', 'O', ' '):
 		return [s]
 	
 	raise ValueError('cria_peca: argumento invalido')
 
 def cria_copia_peca(j):
+	# peca -> peca
+	"""Constroi uma peca identica a outra.
+
+	Recebe como argumento uma peca e devolve outra peca que e uma copia desta.
+	"""
 	if eh_peca(j):
 		return j.copy()
 
 	raise ValueError('cria_copia_peca: argumento invalido')
 
 def eh_peca(arg):
+	# universal -> booleano
+	"""Determina se um objeto e uma peca.
+
+	Recebe um argumento e devolve True se esse argumento for uma peca,
+	devolvendo False caso contrario.
+	"""
 	return isinstance(arg, list) and len(arg) == 1 and arg[0] in ('X', 'O', ' ')
 
 def pecas_iguais(j1, j2):
+	# peca x peca -> booleano
+	"""Determina se duas posicoes sao iguais.
+
+	Recebe duas posicoes como argumentos e devolve True se sao identicas,
+	ou False caso contrario.
+	"""
 	return eh_peca(j1) and j1 == j2
 
 def peca_para_str(j):
+	# peca -> str
+	"""Obtem a representacao em cadeia de caracteres de uma peca.
+
+	Recebe uma peca como argumento e devolve a cadeia de caracteres
+	que a representa, ou seja, '[O]', '[X]' ou '[ ]'.
+	"""
 	return '[' + j[0] + ']'
 
 # Alto Nivel
 
 def peca_para_inteiro(j):
+	# peca -> N
+	"""Obtem a representacao em inteiro de uma peca.
+
+	Recebe uma peca como argumento e devolve o inteiro que a representa, ou
+	seja, 1, -1 ou 0 para uma peca do jogador 'X', 'O' ou livre, respetivamente.
+	"""
 	inteiros = {
 		'[O]': -1,
 		'[ ]': 0,
