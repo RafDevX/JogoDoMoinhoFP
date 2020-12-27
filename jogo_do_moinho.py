@@ -127,7 +127,7 @@ def eh_tabuleiro(arg):
 	if not (isinstance(arg, dict) and len(arg) == 9):
 		return False
 	
-	peca_o, peca_x, peca_livre = cria_peca('X'), cria_peca('O'), cria_peca(' ')
+	peca_o, peca_x, peca_livre = cria_peca('O'), cria_peca('X'), cria_peca(' ')
 	total_o, total_x = 0, 0
 
 	chaves_usadas = {}
@@ -142,8 +142,8 @@ def eh_tabuleiro(arg):
 			total_o += 1
 		elif not pecas_iguais(arg[p], peca_livre):
 			return False
-		if max(total_o, total_x) > 3 or abs(total_x - total_o) > 1:
-			return False
+	if max(total_o, total_x) > 3 or abs(total_x - total_o) > 1:
+		return False
 
 	return True
 
@@ -281,9 +281,9 @@ def escolher_posicao_colocacao_auto(t, j):
 
 def escolher_movimento_facil_auto(t, j):
 	for p in obter_posicoes_jogador(t, j):
-		adj = obter_posicoes_adjacentes(p)
-		if len(adj):
-			return (p, adj[0])
+		for adj in obter_posicoes_adjacentes(p):
+			if eh_posicao_livre(t, adj):
+				return (p, adj)
 	return None
 
 def minimax(t, j, profundidade, seq_movimentos = ()):
@@ -297,3 +297,35 @@ def obter_movimento_auto(t, j, dificuldade):
 		return escolher_movimento_facil_auto(t, j)
 	else:
 		return minimax(t, j, 1 if dificuldade == 'normal' else 5)
+
+def faz_jogada(t, j, movimento):
+	if len(movimento) == 2:
+		move_peca(t, movimento[0], movimento[1])
+	else:
+		coloca_peca(t, j, movimento[0])
+
+def moinho(ext_peca, dificuldade):
+	if not (ext_peca in ('[X]', '[O]')
+		and dificuldade in ('facil', 'normal', 'dificil')):
+		raise ValueError('moinho: argumentos invalidos')
+	peca_humano, peca_computador = cria_peca('X'), cria_peca('O')
+	if ext_peca == '[O]':
+		peca_humano, peca_computador = peca_computador, peca_humano
+	print('Bem-vindo ao JOGO DO MOINHO. Nivel de dificuldade ' \
+		+ dificuldade + '.')
+	t = cria_tabuleiro()
+	peca_livre = cria_peca(' ')
+	ganhador = peca_livre
+	jogada_humano = True
+	print(tabuleiro_para_str(t))
+	while pecas_iguais(ganhador, peca_livre):
+		j = peca_humano if jogada_humano else peca_computador
+		if jogada_humano:
+			faz_jogada(t, j, obter_movimento_manual(t, j))
+		else:
+			print('Turno do computador (' + dificuldade + ')')
+			faz_jogada(t, j, obter_movimento_auto(t, j, dificuldade))
+		print(tabuleiro_para_str(t))
+		jogada_humano = not jogada_humano
+		ganhador = obter_ganhador(t)
+	return ganhador
