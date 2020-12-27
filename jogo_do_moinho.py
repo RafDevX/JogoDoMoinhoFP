@@ -247,7 +247,7 @@ def criterio_colocacao_bloqueio(t, j):
 
 def criterio_colocacao_centro(t, j):
 	p = cria_posicao('b', '2')
-	return eh_posicao_livre(t, p) and p
+	return p if eh_posicao_livre(t, p) else None
 
 def criterio_colocacao_canto_vazio(t, j):
 	for s in ('a1', 'c1', 'a3', 'c3'):
