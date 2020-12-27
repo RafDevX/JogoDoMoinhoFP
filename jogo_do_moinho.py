@@ -287,7 +287,24 @@ def escolher_movimento_facil_auto(t, j):
 	return None
 
 def minimax(t, j, profundidade, seq_movimentos = ()):
-	return 'todo' # not sure if seq_movimentos should be tuple
+	ganhador_int = peca_para_inteiro(obter_ganhador(t))
+	if ganhador_int or profundidade == 0:
+		return ganhador_int, seq_movimentos
+	j_int = peca_para_inteiro(j)
+	melhor_resultado = -j_int
+	melhor_seq_movimentos = ()
+	for p in obter_posicoes_jogador(t, j):
+		for adj in obter_posicoes_adjacentes(p):
+			if eh_posicao_livre(t, adj):
+				novo_t = move_peca(cria_copia_tabuleiro(t), p, adj)
+				(novo_resultado, nova_seq_movimentos) = minimax(novo_t, \
+					cria_peca('X' if j_int == -1 else 'O'), profundidade - 1, \
+					seq_movimentos + ((p, adj),))
+				if (not melhor_seq_movimentos
+					or ((j_int * novo_resultado) > (j_int * melhor_resultado))):
+					melhor_resultado = novo_resultado
+					melhor_seq_movimentos = nova_seq_movimentos
+	return (melhor_resultado, melhor_seq_movimentos)
 
 def obter_movimento_auto(t, j, dificuldade):
 	fase = obter_fase(t, j)
@@ -296,7 +313,9 @@ def obter_movimento_auto(t, j, dificuldade):
 	elif dificuldade == 'facil':
 		return escolher_movimento_facil_auto(t, j)
 	else:
-		return minimax(t, j, 1 if dificuldade == 'normal' else 5)
+		(_, seq_movs) = minimax(t, j, 1 if dificuldade == 'normal' else 5)
+		return seq_movs[0] if len(seq_movs) \
+			else 2*((obter_posicoes_jogador(t, j))[0],)
 
 def faz_jogada(t, j, movimento):
 	if len(movimento) == 2:
