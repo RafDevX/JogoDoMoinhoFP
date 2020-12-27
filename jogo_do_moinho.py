@@ -107,7 +107,7 @@ def obter_peca(t, p):
 
 def obter_vetor(t, s):
 	v = ()
-	for ps in t.keys():
+	for ps in ('a1', 'b1', 'c1', 'a2', 'b2', 'c2', 'a3', 'b3', 'c3'):
 		if s in ps:
 			v += (t[ps],)
 	return v
