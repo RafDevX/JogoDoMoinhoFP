@@ -5,37 +5,84 @@
 ## Baixo Nivel
 
 def cria_posicao(c, l):
+	# str x str -> posicao
+	"""Constroi uma posicao.
+
+	Recebe como argumentos duas cadeias de caracteres correspondentes
+	a coluna e a linha de uma posicao e devolve a posicao correspondente.
+	Gera um ValueError caso algum dos argumentos seja invalido.
+	"""
 	if c in ('a', 'b', 'c') and l in ('1', '2', '3'):
 		return [c, l]
 
 	raise ValueError('cria_posicao: argumentos invalidos')
 
 def cria_copia_posicao(p):
+	# posicao -> posicao
+	"""Constroi uma posicao identica a outra.
+
+	Recebe como argumento uma posicao e devolve outra posicao que e
+	a copia da dada.
+	"""
 	if eh_posicao(p):
 		return p.copy()
 	
 	raise ValueError('cria_copia_posicao: argumento invalido')
 
 def obter_pos_c(p):
+	# posicao -> str
+	"""Obtem a coluna correspondente a uma posicao.
+
+	Recebe como argumento uma posicao e devolve a sua componente coluna.
+	"""
 	return p[0]
 
 def obter_pos_l(p):
+	# posicao -> str
+	"""Obtem a linha correspondente a uma posicao.
+
+	Recebe como argumento uma posicao e devolve a sua componente linha.
+	"""
 	return p[1]
 
 def eh_posicao(arg):
+	# universal -> booleano
+	"""Determina se um objeto e uma posicao.
+
+	Recebe um argumento e devolve True se esse argumento for uma posicao,
+	devolvendo False caso contrario.
+	"""
 	return (isinstance(arg, list) and len(arg) == 2
 		and arg[0] in ('a', 'b', 'c') and arg[1] in ('1', '2', '3'))
 
 def posicoes_iguais(p1, p2):
+	# posicao x posicao -> booleano
+	"""Determina se duas posicoes sao iguais.
+
+	Recebe duas posicoes como argumentos e devolve True se sao identicas,
+	ou False caso contrario.
+	"""
 	return (eh_posicao(p1) and eh_posicao(p2)
 	and p1[0] == p2[0] and p1[1] == p2[1])
 
 def posicao_para_str(p):
+	# posicao -> str
+	"""Obtem a representacao em cadeia de caracteres de uma posicao.
+
+	Recebe uma posicao como argumento e devolve a cadeia de caracteres
+	que a representa, na forma 'cl' (sendo c a sua coluna e l a sua linha).
+	"""
 	return p[0] + p[1]
 
 ## Alto Nivel
 
 def obter_posicoes_adjacentes(p):
+	# posicao -> tuplo de posicoes
+	"""Obtem as posicoes adjacentes a uma posicao.
+
+	Recebe uma posicao como argumento e devolve um tuplo com todas as
+	posicoes adjacentes a esta, por ordem de leitura do tabuleiro.
+	"""
 	adj = {
 		'a1': ('b1', 'a2', 'b2'),
 		'b1': ('a1', 'c1', 'b2'),
@@ -331,27 +378,24 @@ def faz_jogada(t, j, movimento):
 	else:
 		coloca_peca(t, j, movimento[0])
 
-def moinho(ext_peca, dificuldade):
+def moinho(ext_peca, dific):
 	if not (ext_peca in ('[X]', '[O]')
-		and dificuldade in ('facil', 'normal', 'dificil')):
+		and dific in ('facil', 'normal', 'dificil')):
 		raise ValueError('moinho: argumentos invalidos')
 	peca_humano, peca_computador = cria_peca('X'), cria_peca('O')
 	if ext_peca == '[O]':
 		peca_humano, peca_computador = peca_computador, peca_humano
-	print('Bem-vindo ao JOGO DO MOINHO. Nivel de dificuldade ' \
-		+ dificuldade + '.')
-	t = cria_tabuleiro()
-	peca_livre = cria_peca(' ')
-	ganhador = peca_livre
-	jogada_humano = True
+	print('Bem-vindo ao JOGO DO MOINHO. Nivel de dificuldade ' + dific + '.')
+	t, peca_livre = cria_tabuleiro(), cria_peca(' ')
+	ganhador, jogada_humano = peca_livre, True
 	print(tabuleiro_para_str(t))
 	while pecas_iguais(ganhador, peca_livre):
 		j = peca_humano if jogada_humano else peca_computador
 		if jogada_humano:
 			faz_jogada(t, j, obter_movimento_manual(t, j))
 		else:
-			print('Turno do computador (' + dificuldade + ')')
-			faz_jogada(t, j, obter_movimento_auto(t, j, dificuldade))
+			print('Turno do computador (' + dific + ')')
+			faz_jogada(t, j, obter_movimento_auto(t, j, dific))
 		print(tabuleiro_para_str(t))
 		jogada_humano = not jogada_humano
 		ganhador = obter_ganhador(t)
