@@ -634,4 +634,4 @@ def moinho(ext_peca, dific):
 		print(tabuleiro_para_str(t))
 		jogada_humano = not jogada_humano
 		ganhador = obter_ganhador(t)
-	return ganhador
+	return peca_para_str(ganhador)
