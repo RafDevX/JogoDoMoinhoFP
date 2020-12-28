@@ -390,10 +390,25 @@ def obter_posicoes_jogador(t, j):
 
 ##### Funcoes Adicionais #####
 
-def obter_fase(t, j): # aux
+def obter_fase(t, j):
+	# tabuleiro x peca -> str
+	"""Determina a fase de jogo para um jogador com base num tabuleiro.
+
+	Recebe como argumentos um tabuleiro e uma peca, devolvendo uma cadeia de
+	caracteres ('movimento' ou 'colocacao') correspondente a fase de jogo em
+	que esse jogador se encontra, relativamente ao tabuleiro dado.
+	"""
 	return 'movimento' if len(obter_posicoes_jogador(t,j)) == 3 else 'colocacao'
 
 def obter_movimento_manual(t, j):
+	# tabuleiro x peca -> tuplo de posicoes
+	"""Pede uma jogada ao utilizador.
+
+	Recebe como argummentos um tabuleiro e uma peca correspondente ao jogador
+	humano. Na fase de colocacao, devolve um tuplo com uma posicao onde o humano
+	deseja colocar uma peca. Na fase de movimento, devolve um tuplo com duas
+	posicoes: por esta ordem, a de origem e a de destino.
+	"""
 	fase = obter_fase(t, j)
 	if fase == 'colocacao':
 		p_str = input('Turno do jogador. Escolha uma posicao: ')
@@ -416,6 +431,13 @@ def obter_movimento_manual(t, j):
 # <Criterios de Colocacao Automatica>
 
 def criterio_colocacao_vitoria(t, j):
+	# tabuleiro x peca -> posicao/nenhum
+	"""Tenta aplicar o criterio de colocacao "vitoria".
+
+	Recebe como argumentos um tabuleiro e uma peca. Devolve a posicao em que o
+	jogador a que corresponde a peca pode jogar para ganhar o jogo. Caso nao
+	exista uma posicao nesta situacao, devolve None.
+	"""
 	for s in ('a1', 'b1', 'c1', 'a2', 'b2', 'c2', 'a3', 'b3', 'c3'):
 		p = cria_posicao(s[0], s[1])
 		t_tmp = cria_copia_tabuleiro(t)
@@ -424,14 +446,34 @@ def criterio_colocacao_vitoria(t, j):
 	return None
 
 def criterio_colocacao_bloqueio(t, j):
+	# tabuleiro x peca -> posicao/nenhum
+	"""Tenta aplicar o criterio de colocacao "bloqueio".
+
+	Recebe como argumentos um tabuleiro e uma peca. Devolve a posicao em que o
+	jogador a que corresponde a peca pode jogar para bloquear uma vitoria do 
+	adversario. Caso nao exista uma posicao nesta situacao, devolve None.
+	"""
 	outro = cria_peca('X') if 'O' in peca_para_str(j) else cria_peca('O')
 	return criterio_colocacao_vitoria(t, outro)
 
 def criterio_colocacao_centro(t, j):
+	# tabuleiro x peca -> posicao/nenhum
+	"""Tenta aplicar o criterio de colocacao "centro".
+
+	Recebe como argumentos um tabuleiro e uma peca. Devolve a posicao central do
+	tabuleiro se esta estiver livre; caso contrario, devolve None.
+	"""
 	p = cria_posicao('b', '2')
 	return p if eh_posicao_livre(t, p) else None
 
 def criterio_colocacao_canto_vazio(t, j):
+	# tabuleiro x peca -> posicao/nenhum
+	"""Tenta aplicar o criterio de colocacao "canto vazio".
+
+	Recebe como argumentos um tabuleiro e uma peca. Devolve a posicao do
+	primeiro canto, por ordem de leitura, que esta livre no tabuleiro, ou None
+	se nenhum estiver.
+	"""
 	for s in ('a1', 'c1', 'a3', 'c3'):
 		p = cria_posicao(s[0], s[1])
 		if eh_posicao_livre(t, p):
@@ -439,6 +481,13 @@ def criterio_colocacao_canto_vazio(t, j):
 	return None
 
 def criterio_colocacao_lateral_vazio(t, j):
+	# tabuleiro x peca -> posicao/nenhum
+	"""Tenta aplicar o criterio de colocacao "lateral vazio".
+
+	Recebe como argumentos um tabuleiro e uma peca. Devolve a posicao da
+	primeira lateral, por ordem de leitura, que esta livre no tabuleiro, ou None
+	se nenhuma estiver.
+	"""
 	for s in ('b1', 'a2', 'c2', 'b3'):
 		p = cria_posicao(s[0], s[1])
 		if eh_posicao_livre(t, p):
@@ -448,11 +497,15 @@ def criterio_colocacao_lateral_vazio(t, j):
 # </Criterios de Colocacao Automatica>
 
 def escolher_posicao_colocacao_auto(t, j):
-	criterios = (
-		criterio_colocacao_vitoria, criterio_colocacao_bloqueio,
+	# tabuleiro x peca -> posicao
+	"""Escolhe uma posicao onde colocar uma peca.
+
+	Recebe um tabuleiro e uma peca e devolve a posicao identificada como otima
+	pelo primeiro criterio aplicavel (gerando um RuntimeError se nenhum o for).
+	"""
+	criterios = (criterio_colocacao_vitoria, criterio_colocacao_bloqueio, \
 		criterio_colocacao_centro, criterio_colocacao_canto_vazio,
-		criterio_colocacao_lateral_vazio,
-	)
+		criterio_colocacao_lateral_vazio)
 	for crit in criterios:
 		p = crit(t, j)
 		if p is not None:
@@ -462,6 +515,12 @@ def escolher_posicao_colocacao_auto(t, j):
 		+ 'nenhum criterio de colocacao e aplicavel') 
 
 def escolher_movimento_facil_auto(t, j):
+	# tabuleiro x peca -> posicao
+	"""Escolhe um movimento na dificuldade 'facil'.
+
+	Recebe um tabuleiro e uma peca e devolve a primeira posicao adjacente a uma
+	posicao do jogador correspondente a peca dada que esteja livre, ou None.
+	"""
 	for p in obter_posicoes_jogador(t, j):
 		for adj in obter_posicoes_adjacentes(p):
 			if eh_posicao_livre(t, adj):
@@ -469,6 +528,14 @@ def escolher_movimento_facil_auto(t, j):
 	return None
 
 def minimax(t, j, profundidade, seq_movimentos = ()):
+	# tabuleiro x peca x inteiro x tuplo -> tuplo(inteiro x tuplo)
+	"""Implementa o algoritmo minimax.
+
+	Recebe um tabuleiro, uma peca, uma profundidade e sequencia de movimentos.
+	Analisa as jogadas possiveis ate a dada profundidade, devolvendo o resultado
+	do melhor cenario para o jogador da peca dada, tal como a sequencia de
+	movimentos a efetuar para chegar a essa situacao.
+	"""
 	ganhador_int = peca_para_inteiro(obter_ganhador(t))
 	if ganhador_int or profundidade == 0:
 		return ganhador_int, seq_movimentos
@@ -489,6 +556,14 @@ def minimax(t, j, profundidade, seq_movimentos = ()):
 	return (melhor_resultado, melhor_seq_movimentos)
 
 def obter_movimento_auto(t, j, dificuldade):
+	# tabuleiro x peca x str -> tuplo de posicoes
+	"""Calcula o movimento para um jogador num tabuleiro numa dificuldade.
+
+	Recebe um tabuleiro, uma peca de um jogador e uma cadeia de caracteres de
+	uma dificuldade ('facil', 'normal', 'dificil'), devolvendo um tuplo com uma
+	(na fase de colocacoes) ou duas (na fase de movimento) posicoes que
+	corresponde a uma jogada do computador.
+	"""
 	fase = obter_fase(t, j)
 	mov_redundante = 2*((obter_posicoes_jogador(t, j))[0],)
 	if fase == 'colocacao':
@@ -500,12 +575,26 @@ def obter_movimento_auto(t, j, dificuldade):
 		return seq_movs[0] if seq_movs else mov_redundante
 
 def faz_jogada(t, j, movimento):
+	# tabuleiro x peca x tuplo -> nenhum
+	"""Executa uma jogada para um jogador num tabuleiro.
+
+	Recebe como argumentos um tabuleiro, a peca de um jogador e um tuplo com um
+	(na fase de colocacao) ou dois elementos (na fase de movimento), executando
+	essa jogada. Nao devolve nada.
+	"""
 	if len(movimento) == 2:
 		move_peca(t, movimento[0], movimento[1])
 	else:
 		coloca_peca(t, j, movimento[0])
 
 def moinho(ext_peca, dific):
+	# str x str -> str
+	"""Corre um jogo completo do Jogo do Moinho.
+
+	Recebe como argumentos a representacao externa da peca com que o humano
+	deseja jogar ('[X]', '[O]') e a dificuldade da partida ('facil', 'normal' ou
+	'dificil'). Devolve a representacao externa de uma peca do jogador ganhador.
+	"""
 	if not (ext_peca in ('[X]', '[O]')
 		and dific in ('facil', 'normal', 'dificil')):
 		raise ValueError('moinho: argumentos invalidos')
