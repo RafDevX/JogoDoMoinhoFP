@@ -298,7 +298,8 @@ def move_peca(t, p1, p2):
 	destino. Altera destrutivamente esse tabuleiro, movendo a peca que esta na
 	primeira posicao para a segunda. Devolve o tabuleiro.
 	"""
-	return remove_peca(coloca_peca(t, obter_peca(t, p1), p2), p1)
+	j = obter_peca(t, p1)
+	return coloca_peca(remove_peca(t, p1), j, p2)
 
 def eh_tabuleiro(arg):
 	# universal -> booleano
@@ -501,6 +502,8 @@ def criterio_colocacao_vitoria(t, j):
 	"""
 	for s in ('a1', 'b1', 'c1', 'a2', 'b2', 'c2', 'a3', 'b3', 'c3'):
 		p = cria_posicao(s[0], s[1])
+		if not eh_posicao_livre(t, p):
+			continue
 		t_tmp = cria_copia_tabuleiro(t)
 		if pecas_iguais(obter_ganhador(coloca_peca(t_tmp, j, p)), j):
 			return p
