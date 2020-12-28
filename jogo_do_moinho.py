@@ -45,7 +45,7 @@ def cria_copia_posicao(p):
 	"""
 	if eh_posicao(p):
 		return p.copy()
-	
+
 	raise ValueError('cria_copia_posicao: argumento invalido')
 
 def obter_pos_c(p):
@@ -141,7 +141,7 @@ def cria_peca(s):
 	"""
 	if s in ('X', 'O', ' '):
 		return [s]
-	
+
 	raise ValueError('cria_peca: argumento invalido')
 
 def cria_copia_peca(j):
@@ -242,7 +242,7 @@ def cria_copia_tabuleiro(t):
 	"""
 	if eh_tabuleiro(t):
 		return {k : cria_copia_peca(t[k]) for k in t.keys()}
-	
+
 	raise ValueError('cria_copia_tabuleiro: argumento invalido')
 
 def obter_peca(t, p):
@@ -366,7 +366,7 @@ def tabuleiro_para_str(t):
 		for peca in obter_vetor(t, l):
 			s += peca_para_str(peca) + '-'
 		return s[:-1]
-	
+
 	return '   a   b   c\n' + linha_tabuleiro_para_str(t, '1') + '\n' \
 		+ '   | \\ | / |\n' + linha_tabuleiro_para_str(t, '2') + '\n' \
 		+ '   | / | \\ |\n' + linha_tabuleiro_para_str(t, '3')
@@ -511,7 +511,7 @@ def criterio_colocacao_bloqueio(t, j):
 	"""Tenta aplicar o criterio de colocacao "bloqueio".
 
 	Recebe como argumentos um tabuleiro e uma peca. Devolve a posicao em que o
-	jogador a que corresponde a peca pode jogar para bloquear uma vitoria do 
+	jogador a que corresponde a peca pode jogar para bloquear uma vitoria do
 	adversario. Caso nao exista uma posicao nesta situacao, devolve None.
 	"""
 	outro = cria_peca('X') if 'O' in peca_para_str(j) else cria_peca('O')
@@ -573,7 +573,7 @@ def escolher_posicao_colocacao_auto(t, j):
 			return p
 
 	raise RuntimeError('escolher_posicao_colocacao_auto: ' \
-		+ 'nenhum criterio de colocacao e aplicavel') 
+		+ 'nenhum criterio de colocacao e aplicavel')
 
 def escolher_movimento_facil_auto(t, j):
 	# tabuleiro x peca -> posicao
