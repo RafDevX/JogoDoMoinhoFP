@@ -2,7 +2,7 @@
 
 """JOGO DO MOINHO
 
-Projeto Fundamentos da Programacao 2020/2021
+2o Projeto de Fundamentos da Programacao 2020/2021
 Licenciatura em Engenharia Informatica e de Computadores (Alameda)
 Instituto Superior Tecnico
 """
@@ -241,7 +241,7 @@ def cria_copia_tabuleiro(t):
 	uma copia deste.
 	"""
 	if eh_tabuleiro(t):
-		return t.copy()
+		return {k : cria_copia_peca(t[k]) for k in t.keys()}
 	
 	raise ValueError('cria_copia_tabuleiro: argumento invalido')
 
@@ -352,7 +352,8 @@ def tabuleiros_iguais(t1, t2):
 	Recebe dois tabuleiros como argumentos e devolve True se sao identicos
 	ou False caso contrario.
 	"""
-	return eh_tabuleiro(t1) and t1 == t2
+	return (eh_tabuleiro(t1) and eh_tabuleiro(t2)
+		and not len([k for k in t1.keys() if not pecas_iguais(t1[k], t2[k])]))
 
 def tabuleiro_para_str(t):
 	# tabuleiro -> str
