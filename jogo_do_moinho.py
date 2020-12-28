@@ -1,6 +1,25 @@
 # 99311 Rafael Serra e Oliveira
 
-##### TAD posicao #####
+"""JOGO DO MOINHO
+
+Projeto Fundamentos da Programacao 2020/2021
+Licenciatura em Engenharia Informatica e de Computadores (Alameda)
+Instituto Superior Tecnico
+"""
+
+##### TAD posicao ##############################################################
+### Representacao Interna: lista de 2 cad. de caracteres [c, l] onde c e a   ###
+### coluna ('a', 'b' ou 'c') e l e a linha ('1', '2' ou '3').                ###
+### Por exemplo, a primeira posicao e dada por ['a', '2']                    ###
+###                                                                          ###
+### Operacoes Basicas: cria_posicao : str x str -> posicao                   ###
+###                    cria_copia_posicao : posicao -> posicao               ###
+###                    obter_pos_c : posicao -> str                          ###
+###                    obter_pos_l : posicao -> str                          ###
+###                    eh_posicao : universal -> booleano                    ###
+###                    posicoes_iguais : posicao x posicao -> booleano       ###
+###                    posicao_para_str : posicao -> str                     ###
+################################################################################
 
 ## Baixo Nivel
 
@@ -96,7 +115,18 @@ def obter_posicoes_adjacentes(p):
 	return tuple(cria_posicao(x[0], x[1]) for x in adj[posicao_para_str(p)])
 
 
-##### TAD peca #####
+##### TAD peca #################################################################
+### Representacao Interna: lista de 1 elemento [s], onde s e uma das         ###
+### seguintes cadeias de caracteres: 'X', 'O' ou ' ' (no ultimo caso, se     ###
+### representar uma peca livre.                                              ###
+### Por exemplo, ['X'] e uma peca do jogador X                               ###
+###                                                                          ###
+### Operacoes Basicas: cria_peca : str -> peca                               ###
+###                    cria_copia_peca : peca -> peca                        ###
+###                    eh_peca : universal -> booleano                       ###
+###                    pecas_iguais : peca x peca -> booleano                ###
+###                    peca_para_str : peca -> str                           ###
+################################################################################
 
 ## Baixo Nivel
 
@@ -169,7 +199,25 @@ def peca_para_inteiro(j):
 	return inteiros[peca_para_str(j)]
 
 
-##### TAD tabuleiro #####
+##### TAD tabuleiro ############################################################
+### Representacao Interna: dicionario cujas chaves sao as representacoes em  ###
+### cadeia de caracteres de todas as posicoes. O valores associado a cada    ###
+### chave e a peca que esta nessa posicao. Por exemplo, o tabuleiro inicial  ###
+### e dado por {'a1': <peca ' '>, 'b1': <peca ' '>, <...>, 'c3': <peca ' '>} ###
+###                                                                          ###
+### Operacoes Basicas: cria_tabuleiro : {} -> tabuleiro                      ###
+###                    cria_copia_tabuleiro : tabuleiro -> tabuleiro         ###
+###                    obter_peca : tabuleiro x posicao -> peca              ###
+###                    obter_vetor : tabuleiro x str -> tuplo de pecas       ###
+###                    coloca_peca : tabuleiro x peca x posicao -> tabuleiro ###
+###                    remove_peca : tabuleiro x posicao -> tabuleiro        ###
+###                    move_peca : tabuleiro x posicao x posicao -> tabuleiro###
+###                    eh_tabuleiro : universal -> booleano                  ###
+###                    eh_posicao_livre : tabuleiro x posicao -> booleano    ###
+###                    tabuleiros_iguais : tabuleiro x tabuleiro -> booleano ###
+###                    tabuleiro_para_str : tabuleiro -> str                 ###
+###                    tuplo_para_tabuleiro : tuplo -> tabuleiro             ###
+################################################################################
 
 # Baixo Nivel
 
@@ -306,24 +354,18 @@ def tabuleiros_iguais(t1, t2):
 	"""
 	return eh_tabuleiro(t1) and t1 == t2
 
-def linha_tabuleiro_para_str(t, l): # l e um str numerico!
-	# tabuleiro x str -> str
-	"""Obtem a representacao em cadeia de caracteres de uma linha dum tabuleiro.
-
-	Recebe como argumentos um tabuleiro e uma cadeia de caracteres que
-	identifica uma linha, devolvendo a cadeia de caracteres que a representa.
-	"""
-	s = l + ' '
-	for peca in obter_vetor(t, l):
-		s += peca_para_str(peca) + '-'
-	return s[:-1]
-
 def tabuleiro_para_str(t):
 	# tabuleiro -> str
 	"""Obtem a cadeia de caracteres que representa um tabuleiro.
 
 	Recebe como argumento um tabuleiro e devolve a sua representacao externa.
 	"""
+	def linha_tabuleiro_para_str(t, l): # l e um str numerico!
+		s = l + ' '
+		for peca in obter_vetor(t, l):
+			s += peca_para_str(peca) + '-'
+		return s[:-1]
+	
 	return '   a   b   c\n' + linha_tabuleiro_para_str(t, '1') + '\n' \
 		+ '   | \\ | / |\n' + linha_tabuleiro_para_str(t, '2') + '\n' \
 		+ '   | / | \\ |\n' + linha_tabuleiro_para_str(t, '3')
@@ -594,7 +636,7 @@ def obter_movimento_auto(t, j, dificuldade):
 		return seq_movs[0] if seq_movs else mov_redundante
 
 def faz_jogada(t, j, movimento):
-	# tabuleiro x peca x tuplo -> nenhum
+	# tabuleiro x peca x tuplo -> {}
 	"""Executa uma jogada para um jogador num tabuleiro.
 
 	Recebe como argumentos um tabuleiro, a peca de um jogador e um tuplo com um
