@@ -314,7 +314,6 @@ def linha_tabuleiro_para_str(t, l): # l e um str numerico!
 	identifica uma linha, devolvendo a cadeia de caracteres que a representa.
 	"""
 	s = l + ' '
-	primeira = True
 	for peca in obter_vetor(t, l):
 		s += peca_para_str(peca) + '-'
 	return s[:-1]
@@ -325,8 +324,8 @@ def tabuleiro_para_str(t):
 
 	Recebe como argumento um tabuleiro e devolve a sua representacao externa.
 	"""
-	return '   a   b   c\n' + linha_tabuleiro_para_str(t, '1') + '\n'
-		+ '   | \\ | / |\n' + linha_tabuleiro_para_str(t, '2') + '\n'
+	return '   a   b   c\n' + linha_tabuleiro_para_str(t, '1') + '\n' \
+		+ '   | \\ | / |\n' + linha_tabuleiro_para_str(t, '2') + '\n' \
 		+ '   | / | \\ |\n' + linha_tabuleiro_para_str(t, '3')
 
 def tuplo_para_tabuleiro(t):
