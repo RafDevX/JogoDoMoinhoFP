@@ -400,6 +400,21 @@ def obter_fase(t, j):
 	"""
 	return 'movimento' if len(obter_posicoes_jogador(t,j)) == 3 else 'colocacao'
 
+def pode_mov_redundante(t, j):
+	# tabuleiro x peca -> booleano
+	"""Determina se um jogador pode executar o movimento redundante.
+
+	Recebe como argumentos um tabuleiro e uma peca de um jogador, devolvendo
+	True se o jogador nao pode mover nenhuma das suas pecas para outra posicao,
+	tendo assim que jogar de forma redundante; False caso contrario.
+	"""
+	peca_livre = cria_peca(' ')
+	for p in obter_posicoes_jogador(t, j):
+		for adj in obter_posicoes_adjacentes(p):
+			if pecas_iguais(obter_peca(t, adj), peca_livre):
+				return False
+	return True
+
 def obter_movimento_manual(t, j):
 	# tabuleiro x peca -> tuplo de posicoes
 	"""Pede uma jogada ao utilizador.
@@ -424,7 +439,10 @@ def obter_movimento_manual(t, j):
 				and p_str[2] in ('a', 'b', 'c') and p_str[3] in ('1', '2', '3'):
 				p1 = cria_posicao(p_str[0], p_str[1])
 				p2 = cria_posicao(p_str[2], p_str[3])
-				if pecas_iguais(obter_peca(t,p1), j) and eh_posicao_livre(t,p2):
+				if (posicoes_iguais(p1, p2) and pode_mov_redundante(t, j)
+					or (pecas_iguais(obter_peca(t, p1), j)
+					and eh_posicao_livre(t,p2) and len([x for x in \
+					obter_posicoes_adjacentes(p1) if posicoes_iguais(x, p2)]))):
 					return (p1, p2)
 	raise ValueError('obter_movimento_manual: escolha invalida')
 
@@ -565,7 +583,8 @@ def obter_movimento_auto(t, j, dificuldade):
 	corresponde a uma jogada do computador.
 	"""
 	fase = obter_fase(t, j)
-	mov_redundante = 2*((obter_posicoes_jogador(t, j))[0],)
+	pj = obter_posicoes_jogador(t, j)
+	mov_redundante = 2*(pj[0],) if pj else None
 	if fase == 'colocacao':
 		return (escolher_posicao_colocacao_auto(t, j),)
 	elif dificuldade == 'facil':
@@ -610,7 +629,7 @@ def moinho(ext_peca, dific):
 		if jogada_humano:
 			faz_jogada(t, j, obter_movimento_manual(t, j))
 		else:
-			print('Turno do computador (' + dific + ')')
+			print('Turno do computador (' + dific + '):')
 			faz_jogada(t, j, obter_movimento_auto(t, j, dific))
 		print(tabuleiro_para_str(t))
 		jogada_humano = not jogada_humano
