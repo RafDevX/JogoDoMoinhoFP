@@ -59,7 +59,7 @@ def posicoes_iguais(p1, p2):
 	# posicao x posicao -> booleano
 	"""Determina se duas posicoes sao iguais.
 
-	Recebe duas posicoes como argumentos e devolve True se sao identicas,
+	Recebe duas posicoes como argumentos e devolve True se sao identicas
 	ou False caso contrario.
 	"""
 	return eh_posicao(p1) and p1 == p2
@@ -138,7 +138,7 @@ def pecas_iguais(j1, j2):
 	# peca x peca -> booleano
 	"""Determina se duas posicoes sao iguais.
 
-	Recebe duas posicoes como argumentos e devolve True se sao identicas,
+	Recebe duas posicoes como argumentos e devolve True se sao identicas
 	ou False caso contrario.
 	"""
 	return eh_peca(j1) and j1 == j2
@@ -174,21 +174,46 @@ def peca_para_inteiro(j):
 # Baixo Nivel
 
 def cria_tabuleiro():
+	# {} -> tabuleiro
+	"""Constroi um tabuleiro.
+
+	Nao recebe argumentos. Devolve um tabuleiro de jogo do moinho 3x3
+	com todas as suas posicoes livres.
+	"""
 	t = {}
 	for s in ('a1', 'b1', 'c1', 'a2', 'b2', 'c2', 'a3', 'b3', 'c3'):
 		t[s] = cria_peca(' ')
 	return t
 
 def cria_copia_tabuleiro(t):
+	# tabuleiro -> tabuleiro
+	"""Constroi um tabuleiro identico a outro.
+
+	Recebe como argumento um tabuleiro e devolve outro tabuleiro que e
+	uma copia deste.
+	"""
 	if eh_tabuleiro(t):
 		return t.copy()
 	
 	raise ValueError('cria_copia_tabuleiro: argumento invalido')
 
 def obter_peca(t, p):
+	# tabuleiro x posicao -> peca
+	"""Obtem a peca numa posicao de um tabuleiro.
+
+	Recebe como argumento um tabuleiro e uma posicao, devolvendo a peca
+	que esta na posicao indicada desse tabuleiro.
+	"""
 	return t[posicao_para_str(p)]
 
 def obter_vetor(t, s):
+	# tabuleiro x str -> tuplo de pecas
+	"""Obtem uma linha ou uma coluna de um tabuleiro.
+
+	Recebe como argumentos um tabuleiro e uma cadeia de caracteres que
+	identifica uma linha ou uma coluna. Devolve um tuplo de todas as pecas
+	nessa linha/coluna do tabuleiro dado.
+	"""
 	v = ()
 	for ps in ('a1', 'b1', 'c1', 'a2', 'b2', 'c2', 'a3', 'b3', 'c3'):
 		if s in ps:
@@ -196,20 +221,47 @@ def obter_vetor(t, s):
 	return v
 
 def coloca_peca(t, j, p):
+	# tabuleiro x peca x posicao -> tabuleiro
+	"""Coloca uma peca numa posicao de um tabuleiro.
+
+	Recebe como argumentos um tabuleiro, uma peca e uma posicao. Altera
+	destrutivamente o tabuleiro, colocando na posicao a peca dada.
+	Devolve o tabuleiro.
+	"""
 	t[posicao_para_str(p)] = j
 	return t
 
 def remove_peca(t, p):
+	# tabuleiro x posicao -> tabuleiro
+	"""Remove a peca que esta numa posicao de um tabuleiro.
+
+	Recebe como argumentos um tabuleiro e uma posicao. Altera destrutivamente
+	o tabuleiro, colocando uma peca livre nessa posicao do tabuleiro.
+	Devolve o tabuleiro.
+	"""
 	t[posicao_para_str(p)] = cria_peca(' ')
 	return t
 
 def move_peca(t, p1, p2):
+	# tabuleiro x posicao x posicao -> tabuleiro
+	"""Move a peca que esta numa posicao de um tabuleiro para outra.
+
+	Recebe como argumentos um tabuleiro, uma posicao de origem e uma posicao de
+	destino. Altera destrutivamente esse tabuleiro, movendo a peca que esta na
+	primeira posicao para a segunda. Devolve o tabuleiro.
+	"""
 	return remove_peca(coloca_peca(t, obter_peca(t, p1), p2), p1)
 
 def eh_tabuleiro(arg):
+	# universal -> booleano
+	"""Determina se um objeto e um tabuleiro.
+
+	Recebe um argumento e devolve True se esse argumento for um tabuleiro,
+	devolvendo False caso contrario.
+	"""
 	if not (isinstance(arg, dict) and len(arg) == 9):
 		return False
-	
+
 	peca_o, peca_x, peca_livre = cria_peca('O'), cria_peca('X'), cria_peca(' ')
 	total_o, total_x = 0, 0
 
@@ -237,32 +289,53 @@ def eh_tabuleiro(arg):
 	return True
 
 def eh_posicao_livre(t, p):
+	# tabuleiro x posicao -> booleano
+	"""Determina se uma posicao esta livre num tabuleiro.
+
+	Recebe um tabuleiro e uma posicao. Devolve True se essa posicao estiver
+	livre no tabuleiro dado, caso contrario devolve False.
+	"""
 	return pecas_iguais(obter_peca(t, p), cria_peca(' '))
 
 def tabuleiros_iguais(t1, t2):
+	# tabuleiro x tabuleiro -> booleano
+	"""Determina se dois tabuleiros sao iguais.
+
+	Recebe dois tabuleiros como argumentos e devolve True se sao identicos
+	ou False caso contrario.
+	"""
 	return eh_tabuleiro(t1) and t1 == t2
 
 def linha_tabuleiro_para_str(t, l): # l e um str numerico!
+	# tabuleiro x str -> str
+	"""Obtem a representacao em cadeia de caracteres de uma linha dum tabuleiro.
+
+	Recebe como argumentos um tabuleiro e uma cadeia de caracteres que
+	identifica uma linha, devolvendo a cadeia de caracteres que a representa.
+	"""
 	s = l + ' '
 	primeira = True
 	for peca in obter_vetor(t, l):
-		if primeira:
-			primeira = False
-		else:
-			s += '-'
-		s += peca_para_str(peca)
-	return s
+		s += peca_para_str(peca) + '-'
+	return s[:-1]
 
 def tabuleiro_para_str(t):
-	s = '   a   b   c\n'
-	s += linha_tabuleiro_para_str(t, '1') + '\n'
-	s += '   | \\ | / |\n'
-	s += linha_tabuleiro_para_str(t, '2') + '\n'
-	s += '   | / | \\ |\n'
-	s += linha_tabuleiro_para_str(t, '3')
-	return s
+	# tabuleiro -> str
+	"""Obtem a cadeia de caracteres que representa um tabuleiro.
+
+	Recebe como argumento um tabuleiro e devolve a sua representacao externa.
+	"""
+	return '   a   b   c\n' + linha_tabuleiro_para_str(t, '1') + '\n'
+		+ '   | \\ | / |\n' + linha_tabuleiro_para_str(t, '2') + '\n'
+		+ '   | / | \\ |\n' + linha_tabuleiro_para_str(t, '3')
 
 def tuplo_para_tabuleiro(t):
+	# tuplo -> tabuleiro
+	"""Transforma um tuplo num tabuleiro.
+
+	Recebe como argumento um tuplo de tuplos (linhas), cada um com 3 inteiros
+	(1, -1 ou 0). Devolve o tabuleiro correspondente.
+	"""
 	tab = {}
 	for s in ('a1', 'b1', 'c1', 'a2', 'b2', 'c2', 'a3', 'b3', 'c3'):
 		inteiro = t[int(s[1]) - 1][ord(s[0]) - ord('a')]
@@ -277,6 +350,12 @@ def tuplo_para_tabuleiro(t):
 # Alto Nivel
 
 def obter_ganhador(t):
+	# tabuleiro -> peca
+	"""Determina o ganhador num tabuleiro.
+
+	Recebe como argumento um tabuleiro e devolve uma peca do jogador com 3 pecas
+	em linha ou coluna. Se nao existir ganhador, devolve uma peca livre.
+	"""
 	peca_livre = cria_peca(' ')
 	for i in ('a', 'b', 'c', '1', '2', '3'):
 		v = obter_vetor(t, i)
@@ -286,9 +365,22 @@ def obter_ganhador(t):
 	return peca_livre
 
 def obter_posicoes_livres(t):
+	# tabuleiro -> tuplo de posicoes
+	"""Obtem todas as posicoes livres num tabuleiro.
+
+	Recebe como argumento um tabuleiro e devolve um tuplo com todas as posicoes
+	livres nele, por ordem de leitura.
+	"""
 	return obter_posicoes_jogador(t, cria_peca(' '))
 
 def obter_posicoes_jogador(t, j):
+	# tabuleiro x peca -> tuplo de posicoes
+	"""Obtem todas as posicoes de um jogador num tabuleiro.
+
+	Recebe como argumento um tabuleiro e uma peca de um jogador, devolvendo um
+	tuplo com todas as posicoes em que esse tabuleiro tenha pecas desse jogador,
+	por ordem de leitura.
+	"""
 	posicoes = ()
 	for s in ('a1', 'b1', 'c1', 'a2', 'b2', 'c2', 'a3', 'b3', 'c3'):
 		p = cria_posicao(s[0], s[1])
