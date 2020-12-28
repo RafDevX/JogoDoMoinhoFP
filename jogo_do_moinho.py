@@ -622,7 +622,7 @@ def moinho(ext_peca, dific):
 		peca_humano, peca_computador = peca_computador, peca_humano
 	print('Bem-vindo ao JOGO DO MOINHO. Nivel de dificuldade ' + dific + '.')
 	t, peca_livre = cria_tabuleiro(), cria_peca(' ')
-	ganhador, jogada_humano = peca_livre, True
+	ganhador, jogada_humano = peca_livre, ext_peca == '[X]'
 	print(tabuleiro_para_str(t))
 	while pecas_iguais(ganhador, peca_livre):
 		j = peca_humano if jogada_humano else peca_computador
