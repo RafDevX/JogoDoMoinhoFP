@@ -7,6 +7,8 @@ Licenciatura em Engenharia Informatica e de Computadores (Alameda)
 Instituto Superior Tecnico
 """
 
+from functools import reduce
+
 ##### TAD posicao ##############################################################
 ### Representacao Interna: lista de 2 cad. de caracteres [c, l] onde c e a   ###
 ### coluna ('a', 'b' ou 'c') e l e a linha ('1', '2' ou '3').                ###
@@ -118,7 +120,7 @@ def obter_posicoes_adjacentes(p):
 ##### TAD peca #################################################################
 ### Representacao Interna: lista de 1 elemento [s], onde s e uma das         ###
 ### seguintes cadeias de caracteres: 'X', 'O' ou ' ' (no ultimo caso, se     ###
-### representar uma peca livre.                                              ###
+### representar uma peca livre)                                              ###
 ### Por exemplo, ['X'] e uma peca do jogador X                               ###
 ###                                                                          ###
 ### Operacoes Basicas: cria_peca : str -> peca                               ###
@@ -191,12 +193,7 @@ def peca_para_inteiro(j):
 	Recebe uma peca como argumento e devolve o inteiro que a representa, ou
 	seja, 1, -1 ou 0 para uma peca do jogador 'X', 'O' ou livre, respetivamente.
 	"""
-	inteiros = {
-		'[O]': -1,
-		'[ ]': 0,
-		'[X]': 1,
-	}
-	return inteiros[peca_para_str(j)]
+	return {'[O]': -1, '[ ]': 0, '[X]': 1}[peca_para_str(j)]
 
 
 ##### TAD tabuleiro ############################################################
@@ -228,10 +225,8 @@ def cria_tabuleiro():
 	Nao recebe argumentos. Devolve um tabuleiro de jogo do moinho 3x3
 	com todas as suas posicoes livres.
 	"""
-	t = {}
-	for s in ('a1', 'b1', 'c1', 'a2', 'b2', 'c2', 'a3', 'b3', 'c3'):
-		t[s] = cria_peca(' ')
-	return t
+	return {s : cria_peca(' ') for \
+		s in ('a1', 'b1', 'c1', 'a2', 'b2', 'c2', 'a3', 'b3', 'c3')}
 
 def cria_copia_tabuleiro(t):
 	# tabuleiro -> tabuleiro
@@ -262,11 +257,8 @@ def obter_vetor(t, s):
 	identifica uma linha ou uma coluna. Devolve um tuplo de todas as pecas
 	nessa linha/coluna do tabuleiro dado.
 	"""
-	v = ()
-	for ps in ('a1', 'b1', 'c1', 'a2', 'b2', 'c2', 'a3', 'b3', 'c3'):
-		if s in ps:
-			v += (t[ps],)
-	return v
+	return tuple([t[ps] for ps \
+		in ('a1', 'b1', 'c1', 'a2', 'b2', 'c2', 'a3', 'b3', 'c3') if s in ps])
 
 def coloca_peca(t, j, p):
 	# tabuleiro x peca x posicao -> tabuleiro
@@ -312,9 +304,8 @@ def eh_tabuleiro(arg):
 		return False
 
 	peca_o, peca_x, peca_livre = cria_peca('O'), cria_peca('X'), cria_peca(' ')
-	total_o, total_x = 0, 0
+	total_o, total_x, chaves_usadas = 0, 0, {}
 
-	chaves_usadas = {}
 	for p in arg.keys():
 		if (p not in ('a1', 'b1', 'c1', 'a2', 'b2', 'c2', 'a3', 'b3', 'c3')
 			or p in chaves_usadas.keys()):
@@ -362,15 +353,12 @@ def tabuleiro_para_str(t):
 
 	Recebe como argumento um tabuleiro e devolve a sua representacao externa.
 	"""
-	def linha_tabuleiro_para_str(t, l): # l e um str numerico!
-		s = l + ' '
-		for peca in obter_vetor(t, l):
-			s += peca_para_str(peca) + '-'
-		return s[:-1]
+	def linha_str(l): # str (numerico) -> str
+		return (reduce(lambda s, peca : s + peca_para_str(peca) + '-', \
+			obter_vetor(t, l), l + ' '))[:-1]
 
-	return '   a   b   c\n' + linha_tabuleiro_para_str(t, '1') + '\n' \
-		+ '   | \\ | / |\n' + linha_tabuleiro_para_str(t, '2') + '\n' \
-		+ '   | / | \\ |\n' + linha_tabuleiro_para_str(t, '3')
+	return '   a   b   c\n' + linha_str('1') + '\n' + '   | \\ | / |\n' \
+		+ linha_str('2') + '\n' + '   | / | \\ |\n' + linha_str('3')
 
 def tuplo_para_tabuleiro(t):
 	# tuplo -> tabuleiro
