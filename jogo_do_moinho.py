@@ -395,6 +395,17 @@ def obter_ganhador(t):
 			return v[0]
 	return peca_livre
 
+def obter_posicoes_peca(t, j):
+	# tabuleiro x peca -> tuplo de posicoes
+	"""Obtem todas as posicoes com pecas iguais a dada num tabuleiro.
+
+	Recebe como argumento um tabuleiro e uma peca, devolvendo um tuplo com todas
+	as posicoes em que esse tabuleiro tenha pecas iguais a peca dada, por ordem.
+	"""
+	return tuple([p for p in [cria_posicao(s[0], s[1]) \
+		for s in ('a1', 'b1', 'c1', 'a2', 'b2', 'c2', 'a3', 'b3', 'c3')] \
+		if pecas_iguais(obter_peca(t, p), j)])
+
 def obter_posicoes_livres(t):
 	# tabuleiro -> tuplo de posicoes
 	"""Obtem todas as posicoes livres num tabuleiro.
@@ -402,22 +413,17 @@ def obter_posicoes_livres(t):
 	Recebe como argumento um tabuleiro e devolve um tuplo com todas as posicoes
 	livres nele, por ordem de leitura.
 	"""
-	return obter_posicoes_jogador(t, cria_peca(' '))
+	return obter_posicoes_peca(t, cria_peca(' '))
 
 def obter_posicoes_jogador(t, j):
 	# tabuleiro x peca -> tuplo de posicoes
 	"""Obtem todas as posicoes de um jogador num tabuleiro.
 
-	Recebe como argumento um tabuleiro e uma peca de um jogador, devolvendo um
-	tuplo com todas as posicoes em que esse tabuleiro tenha pecas desse jogador,
-	por ordem de leitura.
+	Recebe como argumento um tabuleiro e uma peca de um dos dois jogadores,
+	devolvendo um tuplo com todas as posicoes em que esse tabuleiro tenha pecas
+	desse jogador, por ordem de leitura.
 	"""
-	posicoes = ()
-	for s in ('a1', 'b1', 'c1', 'a2', 'b2', 'c2', 'a3', 'b3', 'c3'):
-		p = cria_posicao(s[0], s[1])
-		if pecas_iguais(obter_peca(t, p), j):
-			posicoes += (p,)
-	return posicoes
+	return obter_posicoes_peca(t, j)
 
 
 ##### Funcoes Adicionais #####
