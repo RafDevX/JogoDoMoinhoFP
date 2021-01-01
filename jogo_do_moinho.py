@@ -585,7 +585,7 @@ def escolher_movimento_facil_auto(t, j):
 				return (p, adj)
 	return None
 
-def minimax(t, j, profundidade, seq_movimentos = ()):
+def minimax(t, j, profundidade, seq_movimentos):
 	# tabuleiro x peca x inteiro x tuplo -> tuplo(inteiro x tuplo)
 	"""Implementa o algoritmo minimax.
 
@@ -630,7 +630,7 @@ def obter_movimento_auto(t, j, dificuldade):
 	elif dificuldade == 'facil':
 		return escolher_movimento_facil_auto(t, j) or mov_redundante
 	else:
-		(_, seq_movs) = minimax(t, j, 1 if dificuldade == 'normal' else 5)
+		(_, seq_movs) = minimax(t, j, 1 if dificuldade == 'normal' else 5, ())
 		return seq_movs[0] if seq_movs else mov_redundante
 
 def faz_jogada(t, j, movimento):
