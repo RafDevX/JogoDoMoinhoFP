@@ -370,11 +370,7 @@ def tuplo_para_tabuleiro(t):
 	tab = {}
 	for s in ('a1', 'b1', 'c1', 'a2', 'b2', 'c2', 'a3', 'b3', 'c3'):
 		inteiro = t[int(s[1]) - 1][ord(s[0]) - ord('a')]
-		jog = ' '
-		if inteiro == 1:
-			jog = 'X'
-		elif inteiro == -1:
-			jog = 'O'
+		jog = 'X' if inteiro == 1 else 'O' if inteiro == -1 else ' '
 		tab[s] = cria_peca(jog)
 	return tab
 
